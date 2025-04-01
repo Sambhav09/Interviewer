@@ -13,8 +13,8 @@ const Page = () => {
     const handleCall = async () => {
         await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID, {
             variableValues: {
-                username: session.user.username,
-                userid: session.user.id
+                username: sambhav,
+                userid: 736336363636,
             },
         })
     }
