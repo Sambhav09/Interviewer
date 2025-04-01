@@ -16,9 +16,6 @@ const Page = () => {
                 username: session.user.username,
                 userid: session.user.id
             },
-            headers: {
-                'Content-Type': 'application/json',
-            },
         })
     }
 
