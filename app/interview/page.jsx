@@ -33,8 +33,8 @@ const Page = () => {
         vapi.on("call-end", onCallEnd)
         vapi.on("speech-start", onSpeechStart)
         vapi.on("speech-end", onSpeechEnd)
-        vapi.on("message", onmessage)
-    }, [mesage, callStatus])
+        // vapi.on("message", onmessage)
+    }, [callStatus])
 
 
     const handleCall = async () => {
