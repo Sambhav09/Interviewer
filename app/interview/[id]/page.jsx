@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { vapi } from '@/lib/vapi.sdk'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 const page = () => {
     const router = useRouter()
