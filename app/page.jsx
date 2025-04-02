@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Generated from "@/component/Generated";
 
 
 const Page = () => {
@@ -33,6 +34,7 @@ const Page = () => {
         <Image src={"/robot.png"} alt="robo-dude" height={350} width={350} />
       </div>
     </div>
+    <Generated />
   </div>
 };
 
