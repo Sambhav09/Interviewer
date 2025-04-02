@@ -61,8 +61,8 @@ const Page = () => {
         <div className='bg-black h-screen'>
             <div className='flex p-10 justify-between pt-24'>
                 <div className='bg-red-50 h-70 w-full sm:w-6/12 md:w-5/12 flex rounded-4xl justify-center items-center '>
-                    <div className={`rounded-full h-20 w-20 bg-blue-300 flex justify-center items-center transition-all duration-300 ease-in-out ${isspeaking ? "animate-pulse" : ""}`}>
-                        <Image src={"/logo.svg"} alt='logo' height={30} width={30} />
+                    <div className={`rounded-full h-44 w-44 bg-blue-400 flex justify-center items-center transition-all duration-300 ease-in-out ${isspeaking ? "animate-pulse" : ""}`}>
+                        <Image src={"/logo.svg"} alt='logo' height={70} width={70} />
 
                     </div>
 
