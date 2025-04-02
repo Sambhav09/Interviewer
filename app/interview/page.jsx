@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 
 const Page = () => {
     const { data: session } = useSession()
-    const [callStatus, setcallStatus] = useState("active")
+    const [callStatus, setcallStatus] = useState("inactive")
     const [isspeaking, setisspeaking] = useState(false)
     const [mesage, setmesage] = useState([])
     const [lastMessage, setlastMessage] = useState("hello user")
