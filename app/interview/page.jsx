@@ -86,18 +86,3 @@ const Page = () => {
 }
 
 export default Page;
-            <div className='flex w-full justify-center items-center pt-14'>
-                <p className='rounded-full flex justify-center p-3 text-xl  items-center text-center bg-blue-200 w-11/12'>{lastMessage}</p>
-            </div>
-            <div className='mt-20 w-full gap-10 flex justify-center items-center'>
-                {callStatus === "inactive" ? (<button className='p-3 px-10 bg-blue-100 rounded-full' onClick={handleRepeat}>repeat</button>) : ("")}
-                {callStatus === "active" && (<button className='p-3 px-10 rounded-full bg-red-400 animate-pulse' onClick={handleCallEnd}>End</button>)}
-                {callStatus === "connecting" && (<button disabled className='p-3 px-10 rounded-full bg-green-400 animate-pulse'>Connecting...</button>)}
-                {callStatus === "inactive" && (<button className='p-3 border-s-black active:border px-10 rounded-full bg-green-400' onClick={handleCall} >Call</button>)}
-
-            </div>
-        </div>
-    );
-}
-
-export default Page;
