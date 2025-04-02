@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { vapi } from '@/lib/vapi.sdk';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 
 const Page = () => {
+    const router = useRouter()
     const { data: session } = useSession()
     const [callStatus, setcallStatus] = useState("inactive")
     const [isspeaking, setisspeaking] = useState(false)
@@ -54,6 +56,7 @@ const Page = () => {
     const handleCallEnd = async () => {
         await vapi.stop()
         setcallStatus("inactive")
+        router.push("/");
     }
 
 
