@@ -22,9 +22,9 @@ const Page = () => {
         const onSpeechStart = () => { setisspeaking(true) }
         const onSpeechEnd = () => { setisspeaking(false) }
         const onmessage = (message) => {
-            if (mesage.type === "transcript" && message.transcriptType === "final") {
+            if (message.type === "transcript" && message.transcriptType === "final") {
                 setmesage((prev) => [...prev, message])
-                setlastMessage(message)
+                setlastMessage(message.transcript)
             }
             console.log(message)
         }
