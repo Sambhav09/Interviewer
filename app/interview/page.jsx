@@ -56,7 +56,10 @@ const Page = () => {
     const handleCallEnd = async () => {
         await vapi.stop()
         setcallStatus("inactive")
-        router.push("/");
+        setTimeout(() => {
+            router.push("/");
+        }, 2000);
+
     }
 
 

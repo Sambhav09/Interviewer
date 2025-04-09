@@ -83,12 +83,12 @@ End the conversation on a polite and positive note.
         const onSpeechEnd = () => { setisspeaking(false) }
         const onmessage = (message) => {
             if (message.type === "transcript" && message.transcriptType === "final") {
-                setmesage((prev) => [...prev, message])
-                setlastMessage(message.transcript)
-
+                setmesage((prev) => [...prev, message]);
+                setlastMessage(message.transcript);
+                console.log("New message received:", message.transcript);
             }
-            console.log(message)
-        }
+            console.log("Current messages:", mesage);
+        };
 
         vapi.on("call-start", onCallStart)
         vapi.on("call-end", onCallEnd)
@@ -168,7 +168,7 @@ End the conversation on a polite and positive note.
         if (res.ok) {
             setTimeout(() => {
                 router.push(`/interview/${id}/feedback`);
-            }, 1000); // show the UI for 1 second before navigating
+            }, 1000);
         }
     };
 
