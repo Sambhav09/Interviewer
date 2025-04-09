@@ -174,30 +174,58 @@ End the conversation on a polite and positive note.
 
 
     return (
-        <div className='bg-black h-screen'>
-            <div className='flex p-10 justify-between pt-24'>
-                <div className='bg-red-50 h-70 w-full sm:w-6/12 md:w-5/12 flex rounded-4xl justify-center items-center '>
-                    <div className={`rounded-full h-44 w-44 bg-blue-400 flex justify-center items-center transition-all duration-300 ease-in-out ${isspeaking ? "animate-pulse" : ""}`}>
-                        <Image src={"/logo.svg"} alt='logo' height={70} width={70} />
+        <div className="bg-black min-h-screen flex flex-col items-center justify-start p-4">
+            {/* Top Section with Logo and Hello */}
+            <div className="w-full flex flex-col md:flex-row gap-4 pt-24 max-w-7xl">
+                <div className="bg-red-50 w-full md:w-1/2 rounded-4xl flex justify-center items-center py-10">
+                    <div
+                        className={`rounded-full h-44 w-44 bg-blue-400 flex justify-center items-center transition-all duration-300 ease-in-out ${isspeaking ? "animate-pulse" : ""
+                            }`}
+                    >
+                        <Image src="/logo.svg" alt="logo" height={70} width={70} />
                     </div>
-
                 </div>
-                <div className='hidden bg-red-50 h-70 w-5/12  md:flex justify-center items-center rounded-4xl'>
-                    hello
+
+                <div className="hidden md:flex bg-red-50 w-1/2 justify-center items-center rounded-4xl py-10">
+                    <p className="text-xl text-black">hello</p>
                 </div>
             </div>
-            <div className='flex w-full justify-center items-center pt-14'>
-                <p className='rounded-full flex justify-center p-3 text-xl  items-center text-center bg-blue-200 w-11/12'>{lastMessage}</p>
-            </div>
-            <div className='mt-20 w-full gap-10 flex justify-center items-center'>
-                {callStatus === "inactive" ? (<button className='p-3 px-10 bg-blue-100 rounded-full' onClick={handleRepeat}>repeat</button>) : ("")}
-                {callStatus === "active" && (<button className='p-3 px-10 rounded-full bg-red-400 animate-pulse' onClick={handleCallEnd}>End</button>)}
-                {callStatus === "connecting" && (<button disabled className='p-3 px-10 rounded-full bg-green-400 animate-pulse'>Connecting...</button>)}
-                {callStatus === "inactive" && (<button className='p-3 border-s-black active:border px-10 rounded-full bg-green-400' onClick={handleCall} >Call</button>)}
 
+            {/* Last Message Section */}
+            <div className="w-full max-w-4xl mt-10 px-2">
+                <p className="rounded-xl p-4 text-xl text-black dark:text-black text-center bg-blue-200 w-full break-words min-h-[60px] shadow">
+                    {lastMessage}
+                </p>
+            </div>
+
+            {/* Buttons Section */}
+            <div className="mt-16 w-full flex flex-wrap gap-4 justify-center items-center">
+                {callStatus === "inactive" && (
+                    <>
+                        <button className="p-3 px-10 bg-blue-100 rounded-full" onClick={handleRepeat}>
+                            Repeat
+                        </button>
+                        <button className="p-3 px-10 rounded-full bg-green-400" onClick={handleCall}>
+                            Call
+                        </button>
+                    </>
+                )}
+
+                {callStatus === "connecting" && (
+                    <button disabled className="p-3 px-10 rounded-full bg-green-400 animate-pulse">
+                        Connecting...
+                    </button>
+                )}
+
+                {callStatus === "active" && (
+                    <button className="p-3 px-10 rounded-full bg-red-400 animate-pulse" onClick={handleCallEnd}>
+                        End
+                    </button>
+                )}
             </div>
         </div>
     );
+
 }
 
 export default page
