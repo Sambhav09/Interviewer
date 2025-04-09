@@ -29,6 +29,15 @@ const InterviewSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
+    },
+    completed: {
+        type: Boolean,
+        default: false,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 })
 

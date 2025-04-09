@@ -1,14 +1,19 @@
 "use client"
+
+
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { vapi } from '@/lib/vapi.sdk'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+
 
 const page = () => {
+    const { data: session } = useSession()
     const router = useRouter()
     const { id } = useParams()
-    const [interview, setinterview] = useState([])
+    const [interview, setinterview] = useState({})
     const [callStatus, setcallStatus] = useState("inactive")
     const [isspeaking, setisspeaking] = useState(false)
     const [mesage, setmesage] = useState([])
@@ -28,7 +33,7 @@ const page = () => {
             voiceId: "sarah",
             stability: 0.4,
             similarityBoost: 0.8,
-            speed: 1.4,
+            speed: 0.9,
             style: 0.5,
             useSpeakerBoost: true,
         },
@@ -80,10 +85,7 @@ End the conversation on a polite and positive note.
             if (message.type === "transcript" && message.transcriptType === "final") {
                 setmesage((prev) => [...prev, message])
                 setlastMessage(message.transcript)
-                if (message.transcript.includes("thank you for your time") || message.transcript.includes("that concludes our interview")) {
-                    handleCallEnd();
 
-                }
             }
             console.log(message)
         }
@@ -93,46 +95,83 @@ End the conversation on a polite and positive note.
         vapi.on("speech-start", onSpeechStart)
         vapi.on("speech-end", onSpeechEnd)
         vapi.on("message", onmessage)
-    }, [mesage, callStatus])
+
+        return () => {
+            vapi.off("call-start", onCallStart);
+            vapi.off("call-end", onCallEnd);
+            vapi.off("speech-start", onSpeechStart);
+            vapi.off("speech-end", onSpeechEnd);
+            vapi.off("message", onmessage);
+        };
+
+    }, [])
 
 
     console.log("id in interview page", id)
+
+    const fetchData = async () => {
+        const res = await fetch(`/api/interview/process/${id}`)
+        const data = await res.json()
+        setinterview(data)
+
+        console.log(data)
+    }
+
     useEffect(() => {
         if (!id) {
             return
         }
-        const fetchData = async () => {
-            const res = await fetch(`/api/interview/process/${id}`)
-            const data = await res.json()
-            setinterview(data)
-            console.log(data)
-        }
+
         fetchData()
 
     }, [id])
+
     const handleCall = async () => {
-        setcallStatus("connecting")
-        await vapi.start(interviewer, {
-            variableValues: {
-                questions: interview.question
+        setcallStatus("connecting");
+        await fetchData();
+
+        try {
+            const response = await vapi.start(interviewer, {
+                variableValues: {
+                    questions: interview.question || "What is your experience?"
+                }
+            });
+
+            console.log("Vapi Call Response:", response);
+            if (!response) {
+                throw new Error("Vapi call returned null. Possible API issue.");
             }
-        })
-    }
+        } catch (err) {
+            console.error("Error starting Vapi:", err);
+        }
+    };
+
 
     const handleRepeat = async () => {
         window.location.reload()
     }
 
     const handleCallEnd = async () => {
-        await vapi.stop()
-        setcallStatus("generating")
+        vapi.stop();
+
+
+        setlastMessage("Generating feedback...")
+
         const res = await fetch(`/api/interview/${id}/feedback`, {
             method: "POST",
             body: JSON.stringify({
-                feedback: mesage
+                userId: session?.user?.id,
+                feedback: mesage,
             }),
-        })
-    }
+        });
+
+        if (res.ok) {
+            setTimeout(() => {
+                router.push(`/interview/${id}/feedback`);
+            }, 1000); // show the UI for 1 second before navigating
+        }
+    };
+
 
     return (
         <div className='bg-black h-screen'>
@@ -155,7 +194,7 @@ End the conversation on a polite and positive note.
                 {callStatus === "active" && (<button className='p-3 px-10 rounded-full bg-red-400 animate-pulse' onClick={handleCallEnd}>End</button>)}
                 {callStatus === "connecting" && (<button disabled className='p-3 px-10 rounded-full bg-green-400 animate-pulse'>Connecting...</button>)}
                 {callStatus === "inactive" && (<button className='p-3 border-s-black active:border px-10 rounded-full bg-green-400' onClick={handleCall} >Call</button>)}
-                {callStatus === "generating" && (<button disabled className='p-3 px-10 rounded-full bg-green-400 animate-pulse'>Generating...</button>)}
+
             </div>
         </div>
     );
