@@ -8,6 +8,7 @@ export async function GET(req, { params }) {
     try {
         await ConnectToDB();
         const res = await Feedback.findOne({ interviewId: id }).populate("interviewId").lean();
+        await Interview.findByIdAndUpdate(id, { $set: { completed: true } });
         return new Response(JSON.stringify(res), { status: 200 });
     } catch (err) {
         console.log(err)
