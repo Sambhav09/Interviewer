@@ -1,28 +1,17 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Generated from "@/component/Generated";
+import Navbar from "@/component/Navbar";
 
 
 const Page = () => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  console.log(session);
-
-  useEffect(() => {
-    if (status !== "loading" && !session) {
-      router.push("/signin");
-    }
-  }, [session, status, router]);
-
-  if (status === "loading") return <p>Loading...</p>;
 
   return (
+
     <div className="bg-gradient-to-br from-black via-gray-900 to-black min-h-screen w-full text-white">
+      <Navbar />
       <div className="flex flex-col md:flex-row justify-between items-center p-10 gap-8">
         <div className="max-w-xl">
           <h2 className="text-4xl md:text-5xl font-bold text-blue-400 mb-4">
