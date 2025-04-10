@@ -3,7 +3,7 @@ import { ConnectToDB } from "@/utils/database";
 import Interview from "@/models/Interview";
 
 export async function GET(req, { params }) {
-    const { id } = params;
+    const { id } = await params;
     console.log("id in bakcend for peed route is", id)
     try {
         await ConnectToDB();

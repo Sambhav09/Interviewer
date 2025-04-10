@@ -81,7 +81,7 @@ const Generated = () => {
                                 </p>
                                 <div className="flex justify-between items-center">
                                     <p className="text-sm text-gray-300 italic">{item.techstack}</p>
-                                    <Link href={`/interview/${item._id}`}>
+                                    <Link href={`/interview/${item._id}/feedback`}>
                                         <button className="px-4 py-2 rounded-full bg-green-400 hover:bg-green-500 text-sm font-semibold transition">
                                             Review Interview
                                         </button>
