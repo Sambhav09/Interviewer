@@ -4,16 +4,19 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SignUp() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
     const [error, setError] = useState("");
+    const [loading, setloading] = useState(false)
     const router = useRouter();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setloading(true)
 
         const res = await signIn("credentials", {
             redirect: false,
@@ -27,6 +30,7 @@ export default function SignUp() {
         } else {
             router.push("/signin");
         }
+        setloading(false)
     };
 
     return (
@@ -81,16 +85,11 @@ export default function SignUp() {
                         type="submit"
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
                     >
-                        Sign Up
+                        {loading ? "signing up..." : "Sign up"}
                     </button>
                 </form>
 
-                <p className="text-sm text-center mt-4 text-gray-600">
-                    Already have an account?{' '}
-                    <a href="/signin" className="text-blue-600 hover:underline">
-                        Sign In
-                    </a>
-                </p>
+                <p className='flex justify-center items-center pt-5'>Does not have an account ? <Link href="/signin" className='text-blue-700 underline'>Sign up</Link></p>
             </div>
         </div>
     );
