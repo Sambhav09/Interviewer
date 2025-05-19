@@ -9,10 +9,12 @@ export default function SignIn() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setloading] = useState(false)
     const router = useRouter();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setloading(true)
 
         const res = await signIn('credentials', {
             redirect: false,
@@ -25,6 +27,7 @@ export default function SignIn() {
         } else {
             router.push('/');
         }
+         setloading(false)
     };
 
     return (
@@ -67,7 +70,7 @@ export default function SignIn() {
                         type="submit"
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
                     >
-                        Sign In
+                        {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
                 <p className='flex justify-center items-center pt-5'>Does not have an account ? <Link href="/signup" className='text-blue-700 underline'>Sign up</Link></p>
