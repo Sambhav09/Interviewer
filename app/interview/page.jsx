@@ -6,67 +6,60 @@ import { vapi } from '@/lib/vapi.sdk';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-
 const Page = () => {
-    const router = useRouter()
-    const { data: session } = useSession()
-    const [callStatus, setcallStatus] = useState("inactive")
-    const [isspeaking, setisspeaking] = useState(false)
-    const [mesage, setmesage] = useState([])
-    const [lastMessage, setlastMessage] = useState("hello user")
-    console.log(session)
-
-
+    const router = useRouter();
+    const { data: session } = useSession();
+    const [callStatus, setcallStatus] = useState("inactive");
+    const [isspeaking, setisspeaking] = useState(false);
+    const [mesage, setmesage] = useState([]);
+    const [lastMessage, setlastMessage] = useState("hello user");
 
     useEffect(() => {
-        const onCallStart = () => { setcallStatus("active") }
-        const onCallEnd = () => { setcallStatus("inactive") }
-        const onSpeechStart = () => { setisspeaking(true) }
-        const onSpeechEnd = () => { setisspeaking(false) }
+        const onCallStart = () => setcallStatus("active");
+        const onCallEnd = () => setcallStatus("inactive");
+        const onSpeechStart = () => setisspeaking(true);
+        const onSpeechEnd = () => setisspeaking(false);
         const onmessage = (message) => {
             if (message.type === "transcript" && message.transcriptType === "final") {
-                setmesage((prev) => [...prev, message])
-                setlastMessage(message.transcript)
+                setmesage((prev) => [...prev, message]);
+                setlastMessage(message.transcript);
             }
-            console.log(message)
-        }
+            console.log(message);
+        };
 
-        vapi.on("call-start", onCallStart)
-        vapi.on("call-end", onCallEnd)
-        vapi.on("speech-start", onSpeechStart)
-        vapi.on("speech-end", onSpeechEnd)
-        vapi.on("message", onmessage)
-    }, [mesage, callStatus])
-
+        vapi.on("call-start", onCallStart);
+        vapi.on("call-end", onCallEnd);
+        vapi.on("speech-start", onSpeechStart);
+        vapi.on("speech-end", onSpeechEnd);
+        vapi.on("message", onmessage);
+    }, [mesage, callStatus]);
 
     const handleCall = async () => {
-        setcallStatus("connecting")
+        setcallStatus("connecting");
         await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID, {
             variableValues: {
                 username: session?.user?.username,
                 userid: session?.user?.id,
             },
-        })
-    }
+        });
+    };
 
-    const handleRepeat = async () => {
-        window.location.reload()
-    }
+    const handleRepeat = () => {
+        window.location.reload();
+    };
 
     const handleCallEnd = async () => {
-        await vapi.stop()
-        setcallStatus("inactive")
+        await vapi.stop();
+        setcallStatus("inactive");
         setTimeout(() => {
             router.push("/");
         }, 2000);
-
-    }
-
-
+    };
 
     return (
         <div className="bg-black min-h-screen flex flex-col items-center justify-start p-4">
             <div className="flex flex-col md:flex-row gap-4 w-full pt-24 max-w-7xl">
+                {/* Left Circle with Logo */}
                 <div className="bg-red-50 w-full md:w-5/12 rounded-4xl flex justify-center items-center py-10">
                     <div
                         className={`rounded-full h-44 w-44 bg-blue-400 flex justify-center items-center transition-all duration-300 ease-in-out ${isspeaking ? "animate-pulse" : ""
@@ -76,8 +69,14 @@ const Page = () => {
                     </div>
                 </div>
 
+                {/* Right Circle with User Initial */}
                 <div className="hidden md:flex bg-red-50 w-5/12 justify-center items-center rounded-4xl py-10">
-                    <p className="text-xl text-black">hello</p>
+                    <div
+                        className={`rounded-full h-44 w-44 bg-green-500 flex justify-center items-center text-white text-6xl font-bold transition-all duration-300 ease-in-out ${isspeaking ? "animate-pulse" : ""
+                            }`}
+                    >
+                        {session?.user?.username?.charAt(0).toUpperCase() || "U"}
+                    </div>
                 </div>
             </div>
 
@@ -92,7 +91,7 @@ const Page = () => {
             <div className="mt-20 w-full flex flex-wrap gap-6 justify-center items-center">
                 {callStatus === "inactive" && (
                     <>
-                        <button className="p-3 px-10 bg-blue-100 rounded-full" onClick={handleRepeat}>
+                        <button className="p-3 px-10 bg-blue-100 text-black rounded-full" onClick={handleRepeat}>
                             Repeat
                         </button>
                         <button className="p-3 px-10 bg-green-400 rounded-full" onClick={handleCall}>
