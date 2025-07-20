@@ -1,142 +1,72 @@
-// import Feedback from "@/models/Feedback";
-// import { ConnectToDB } from "@/utils/database";
-// import { google } from "@ai-sdk/google";
-// import { generateText } from "ai";
-
-// export async function POST(req, { params }) {
-//     const { id } = await params;
-
-//     const { userId, transcript } = await req.json()
-
-//     try {
-//         await ConnectToDB()
-
-//         const response = await generateText({
-//             model: google("gemini-2.0-flash-001"),
-//             prompt: `You are an professional interviewer and taking a professional interview for a company. Your task is to the evaluate the performance of the interviewee on the basis of his ansser of the answer in the transcript.
-//             Provide the response strictly in the following json format:
-//                \`\`\`json
-//             {
-//                 "total_score" : 85,
-//                 "communication_skills" : 70,
-//                 "technical_knowledge" : 77,
-//                 "problem_solving" : 89,
-//                 "cultural_role_fit" : 92,
-//                 "confidence_clarity" : 65,
-//                 "strength" : "What are the major strength of the interviewee and give it in 5 to 10 points",
-//                 "areasforimprovement" : "What are the areas where the interviewee can improve so he perform better in the interviewee . Provide it in points",
-//                 "finalassessment" : "What is your final thougths on the interviewee is he good, bad or average and give it in 10 points"
-//             }
-//         \`\`\`
-//         Transcript : ${transcript}
-//         `
-//         })
-
-//         console.log(response)
-
-//         const aiFeedback = response
-
-//         const newFeedback = new Feedback({
-//             userId,
-//             interviewId: id,
-//             total_score: Number(aiFeedback.total_score),
-//             category_score: {
-//                 communication_skills: Number(aiFeedback.communication_skills),
-//                 technical_knowledge: Number(aiFeedback.technical_knowledge),
-//                 problem_solving: Number(aiFeedback.problem_solving),
-//                 cultural_role_fit: Number(aiFeedback.cultural_role_fit),
-//                 confidence_clarity: Number(aiFeedback.confidence_clarity)
-//             },
-//             strength: aiFeedback.strength,
-//             areasforimprovement: aiFeedback.areasforimprovement,
-//             finalassessment: aiFeedback.finalassessment,
-//         })
-
-//         await newFeedback.save()
-
-//         return Response.json({ message: "Feedback generated succesfully" })
-//     } catch (err) {
-//         console.log(err)
-//         return Response.json({ message: "Error in genrating feedback" })
-//     }
-// }
-
-
-import Feedback from "@/models/Feedback";
-import { ConnectToDB } from "@/utils/database";
-import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { NextResponse } from 'next/server';
+import Feedback from '@/models/Feedback';
+import { ConnectToDB } from '@/utils/database';
+import Interview from '@/models/Interview';
 
 export async function POST(req, { params }) {
-    const { id } = params;
-    const { userId, transcript } = await req.json();
+    const { id } = await params;
+    const { userId, Questions, transcripts } = await req.json();
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
 
     try {
-        await ConnectToDB();
 
-        const response = await generateText({
-            model: google("gemini-2.0-flash-001"),
-            prompt: `You are a professional interviewer evaluating an interviewee's performance based on the given transcript.
+        await ConnectToDB()
+        console.log("transcript is", transcripts)
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-            Return your response strictly in this JSON format:
-            \`\`\`json
-            {
-              "total_score": 85,
-              "communication_skills": 70,
-              "technical_knowledge": 77,
-              "problem_solving": 89,
-              "cultural_role_fit": 92,
-              "confidence_clarity": 65,
-              "strength": ["Strength point 1", "Strength point 2", "Strength point 3", "Strength point 4", "Strength point 5"],
-              "areas_for_improvement": ["Improvement 1", "Improvement 2", "Improvement 3", "Improvement 4", "Improvement 5", "Improvement 6", "Improvement 7", "Improvement 8"],
-              "final_assessment": ["Assessment 1", "Assessment 2", "Assessment 3", "Assessment 4", "Assessment 5", "Assessment 6", "Assessment 7", "Assessment 8", "Assessment 9", "Assessment 10"]
-            }
-            \`\`\`
-            
-            Transcript:
-            ${transcript}`
+        const prompt = `You are an interview feedback generator. Below is a transcript of a mock interview chat between an interviewer and a candidate. Based on this chat, generate a structured feedback as a JSON array. The array should include the following keys:
 
-        });
+- summary: a short paragraph summarizing the overall interview performance.
+- strength: a list of key strengths the candidate demonstrated.
+- area_of_improvement: a list of areas where the candidate can improve.
+- tips: actionable tips to help the candidate improve.
+- total_score: an integer score out of 10 representing overall performance.
+- communication_score: an integer score out of 10 for the candidate's communication skills.
+- technical_score: an integer score out of 10 for the candidate's technical skills.
+- practice_questions: a list of 3–5 additional practice questions tailored to the candidate’s weak areas.
 
-        console.log("Raw AI Response:", response);
+Here is the transcript:
 
-        // Extract JSON from triple backticks
-        const jsonMatch = response.text.match(/```json\n([\s\S]*?)\n```/);
-        if (!jsonMatch) {
-            throw new Error("Invalid AI response format");
-        }
+"""
+${transcripts}
+"""
 
-        const aiFeedback = JSON.parse(jsonMatch[1]); // Parse JSON safely
+Return the output as a single JSON array with one object containing these keys.
+`;
 
-        // // Validate extracted data before saving
-        // const totalScore = Number(aiFeedback.total_score) || 0;
-        // const communicationSkills = Number(aiFeedback.communication_skills) || 0;
-        // const technicalKnowledge = Number(aiFeedback.technical_knowledge) || 0;
-        // const problemSolving = Number(aiFeedback.problem_solving) || 0;
-        // const culturalRoleFit = Number(aiFeedback.cultural_role_fit) || 0;
-        // const confidenceClarity = Number(aiFeedback.confidence_clarity) || 0;
+        const result = await model.generateContent(prompt);
 
-        const newFeedback = new Feedback({
+        const text = result.response.candidates[0].content.parts[0].text;
+
+        const cleanJsonString = text.replace(/```json\n?/, "").replace(/```/, "").trim();
+
+        const data = JSON.parse(cleanJsonString);
+
+        const feedback = data[0];
+
+        await Interview.findByIdAndUpdate(id, { completed: true }, { new: true })
+
+        const doc = new Feedback({
             userId,
             interviewId: id,
-            total_score: Number(aiFeedback.total_score) || 0,
-            category_score: {
-                communication_skills: Number(aiFeedback.communication_skills) || 0,
-                technical_knowledge: Number(aiFeedback.technical_knowledge) || 0,
-                problem_solving: Number(aiFeedback.problem_solving) || 0,
-                cultural_role_fit: Number(aiFeedback.cultural_role_fit) || 0,
-                confidence_clarity: Number(aiFeedback.confidence_clarity) || 0
-            },
-            strength: Array.isArray(aiFeedback.strength) ? aiFeedback.strength : [],
-            areasforimprovement: Array.isArray(aiFeedback.areas_for_improvement) ? aiFeedback.areas_for_improvement : [],
-            finalassessment: Array.isArray(aiFeedback.final_assessment) ? aiFeedback.final_assessment : []
+            questions: Questions.map(q => q.trim()).filter(Boolean),
+            summary: feedback.summary,
+            strength: feedback.strength,
+            area_of_improvement: feedback.area_of_improvement,
+            tips: feedback.tips,
+            total_score: feedback.total_score,
+            communication_score: feedback.communication_score,
+            technical_score: feedback.technical_score,
+            practice_question: feedback.practice_questions, // note plural
         });
 
+        await doc.save()
 
-        await newFeedback.save();
-        return Response.json({ message: "Feedback generated successfully" });
+        return NextResponse.json({ id, Questions, data });
     } catch (err) {
-        console.error("Error:", err);
-        return Response.json({ message: "Error generating feedback", error: err.message }, { status: 500 });
+        console.error(err);
+        return NextResponse.json({ error: "Failed to generate feedback" }, { status: 500 });
     }
 }

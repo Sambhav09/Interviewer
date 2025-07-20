@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.5",
+    "@google/generative-ai": "^0.24.1",
     "@vapi-ai/web": "^2.2.5",
     "ai": "^4.2.10",
     "bcryptjs": "^3.0.2",

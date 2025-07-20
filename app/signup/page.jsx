@@ -30,22 +30,22 @@ export default function SignUp() {
     };
 
     return (
-        <div className="min-h-screen text-black flex items-center justify-center bg-gray-100 px-4">
-            <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-                <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Create an Account</h1>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-100 px-4">
+            <div className="bg-white/80 backdrop-blur-md p-10 rounded-3xl shadow-2xl w-full max-w-md border border-gray-200">
+                <h1 className="text-4xl font-extrabold text-center mb-8 text-gray-800 tracking-tight">Create Account</h1>
 
                 {error && (
-                    <div className="mb-4 text-sm text-red-600 bg-red-100 border border-red-300 p-2 rounded">
+                    <div className="mb-4 text-sm text-red-600 bg-red-100 border border-red-200 p-2 rounded-lg shadow-sm animate-pulse">
                         {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block mb-1 text-sm font-medium text-gray-700">Username</label>
+                        <label className="block mb-2 text-sm font-semibold text-gray-700">Username</label>
                         <input
                             type="text"
-                            className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-200 px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 transition-all shadow-sm"
                             placeholder="Enter a username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -54,10 +54,10 @@ export default function SignUp() {
                     </div>
 
                     <div>
-                        <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
+                        <label className="block mb-2 text-sm font-semibold text-gray-700">Email</label>
                         <input
                             type="email"
-                            className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-200 px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 transition-all shadow-sm"
                             placeholder="Enter your email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -66,10 +66,10 @@ export default function SignUp() {
                     </div>
 
                     <div>
-                        <label className="block mb-1 text-sm font-medium text-gray-700">Password</label>
+                        <label className="block mb-2 text-sm font-semibold text-gray-700">Password</label>
                         <input
                             type="password"
-                            className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-200 px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 transition-all shadow-sm"
                             placeholder="Create a password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -79,15 +79,15 @@ export default function SignUp() {
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                        className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg transition-all text-lg tracking-wide"
                     >
                         Sign Up
                     </button>
                 </form>
 
-                <p className="text-sm text-center mt-4 text-gray-600">
+                <p className="text-sm text-center mt-6 text-gray-500">
                     Already have an account?{' '}
-                    <a href="/signin" className="text-blue-600 hover:underline">
+                    <a href="/signin" className="text-blue-600 hover:underline font-semibold">
                         Sign In
                     </a>
                 </p>

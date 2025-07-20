@@ -1,53 +1,168 @@
-import Interview from "@/models/Interview"
-import { ConnectToDB } from "@/utils/database"
-import { google } from "@ai-sdk/google"
-import { generateText } from "ai"
-import { NextResponse } from "next/server"
 
-export async function GET() {
-    return Response.json({ success: true, data: "tank you" }, { status: 200 })
-}
 
-export async function POST(req) {
-    const { type, role, level, techstack, amount, userid } = await req.json()
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { NextResponse } from 'next/server';
+import { ConnectToDB } from '@/utils/database';
+import Interview from '@/models/Interview';
+
+const genAI = new GoogleGenerativeAI("AIzaSyBroXLCI5gWLHvhl2EEPyp8DBwBxluj2KQ");
+
+export async function POST(request) {
     try {
         await ConnectToDB();
 
-        const { text } = await generateText({
-            model: google('gemini-2.0-flash-001'),
-            prompt: `Prepare questions for a job interview.
-        The job role is ${role}.
-        The job experience level is ${level}.
-        The tech stack used in the job is: ${techstack}.
-        The focus between behavioural and technical questions should lean towards: ${type}.
-        The amount of questions required is: ${amount}.
-        Please return only the questions, without any additional text.
-        The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
-        Return the questions formatted like this:
-        ["Question 1", "Question 2", "Question 3"]
-        
-        Thank you! <3
-    `,
-        })
-        console.log(text)
-        const question = JSON.parse(text)
-        console.log(question)
-        const newInterview = new Interview({
-            role,
-            type,
-            level,
-            amount,
-            techstack: techstack.split(','),
-            question,
-            userId: userid,
-        })
+        const { userId, transcripts } = await request.json();
 
-        await newInterview.save()
+        if (!userId || !transcripts) {
+            return NextResponse.json(
+                { error: "Missing userId or transcripts" },
+                { status: 400 }
+            );
+        }
 
-        return NextResponse.json({ success: true })
+        console.log("✅ Received input:", transcripts);
+        console.log("👤 User id:", userId);
+
+        const prompt = `
+You are a helpful AI assistant. Below is the conversation between an interviewer (AI) and the interviewee. 
+The interviewer asked about the interviewee's desired role, technologies or skills to focus on, current job level, 
+and the number of interview questions they want to practice.
+
+Your task is to carefully analyze the conversation, extract the interviewee's answers to these four points, 
+and then generate the specified number of appropriate, realistic interview questions tailored to the interviewee's 
+desired role, technologies, and experience level.
+
+Be sure the questions are clear, relevant, and suitable for the stated job level. 
+If the interviewee mentioned a specific number of questions, generate exactly that number.
+
+Here is the conversation:
+---
+${transcripts}
+---
+
+Now, output the interviewee’s details clearly, followed by the list of interview questions. Format the output like this:
+
+**Interviewee Details:**
+- Role: …
+- Type: …
+- Technologies/Skills: …
+- Job Level: …
+- Number of Questions: …
+
+**Interview Questions:**
+1. …
+2. …
+…
+`;
+
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+        let result;
+        try {
+            result = await model.generateContent(prompt);
+        } catch (err) {
+            console.error("❌ Gemini generateContent failed:", err);
+            return NextResponse.json(
+                { error: "Gemini model is overloaded or unavailable. Please try again later." },
+                { status: 503 }
+            );
+        }
+
+        const responseText =
+            result?.response?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+        if (!responseText) {
+            console.error("❌ No response text from Gemini");
+            return NextResponse.json(
+                { error: "Failed to generate content from Gemini." },
+                { status: 500 }
+            );
+        }
+
+        console.log("🤖 Gemini response:\n", responseText);
+
+        function parseGeminiResponse(text) {
+            const details = {};
+            const questions = [];
+
+            const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+
+            let section = '';
+            for (const line of lines) {
+                if (line.startsWith('**Interviewee Details')) {
+                    section = 'details';
+                    continue;
+                }
+                if (line.startsWith('**Interview Questions')) {
+                    section = 'questions';
+                    continue;
+                }
+
+                if (section === 'details') {
+                    const match = line.match(/- ([\w\s\/]+):\s*(.*)/i);
+                    if (match) {
+                        const key = match[1].toLowerCase();
+                        details[key] = match[2];
+                    }
+                }
+
+                if (section === 'questions') {
+                    const match = line.match(/^\d+\.\s+(.*)/);
+                    if (match) {
+                        questions.push(match[1]);
+                    }
+                }
+            }
+
+            return { details, questions };
+        }
+
+        const parsed = parseGeminiResponse(responseText);
+
+        // Validate required fields
+        if (
+            !parsed.details.role ||
+            !parsed.details.type ||
+            !parsed.details['job level'] ||
+            !parsed.details['number of questions'] ||
+            !parsed.details['technologies/skills'] ||
+            parsed.questions.length === 0
+        ) {
+            console.error("❌ Incomplete data parsed:", parsed);
+            return NextResponse.json(
+                { error: "Incomplete data generated by Gemini. Please try again." },
+                { status: 500 }
+            );
+        }
+
+        const doc = new Interview({
+            userId,
+            role: parsed.details.role,
+            type: parsed.details.type,
+            level: parsed.details['job level'],
+            numberOfQuestions: Number(parsed.details['number of questions']),
+            techstack: Array.isArray(parsed.details['technologies/skills'])
+                ? parsed.details['technologies/skills']
+                : parsed.details['technologies/skills'].split(',').map(t => t.trim()),
+            questions: parsed.questions,
+            completed: false,
+            createdAt: new Date()
+        });
+
+        await doc.save();
+
+        console.log("✅ Interview document saved:", doc._id);
+
+        return NextResponse.json(
+            { response: responseText, interviewId: doc._id },
+            { status: 200 }
+        );
 
     } catch (err) {
-        console.log(err)
-        return NextResponse.json(err)
+        console.error("❌ Error in Gemini API route:", err);
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
     }
 }

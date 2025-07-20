@@ -11,26 +11,22 @@ export const authOptions = {
             credentials: {
                 email: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" },
-                username: { label: "Username", type: "text" }, // For signup
+                username: { label: "Username", type: "text" },
             },
             async authorize(credentials) {
                 await ConnectToDB();
 
                 const { email, password, username } = credentials;
 
-                if (username) { // Signup logic
+                if (username) {
                     const userExists = await User.findOne({ email });
                     if (userExists) {
                         throw new Error("User  already exists with that email");
                     }
 
-                    // Hash password and create new user
                     const hashedPassword = await bcrypt.hash(password, 12);
                     const newUser = new User({ email, username, password: hashedPassword });
                     await newUser.save();
-
-                    console.log("✅ User created:", newUser);
-
                     return { id: newUser._id.toString(), email, username };
                 }
 
@@ -56,22 +52,17 @@ export const authOptions = {
     },
     callbacks: {
         async jwt({ token, user }) {
-            console.log("User  in JWT callback:", user); // Debugging line
             if (user) {
-                token.id = user.id; // Ensure ID is stored in the token
+                token.id = user.id;
                 token.email = user.email;
                 token.username = user.username;
             }
-            console.log("🔑 JWT Token:", token);
             return token;
         },
         async session({ session, token }) {
-            console.log("Token in Session callback:", token); // Debugging line
             session.user.id = token.id || null;
             session.user.email = token.email;
             session.user.username = token.username;
-
-            console.log("📂 Session object:", session);
             return session;
         },
     },

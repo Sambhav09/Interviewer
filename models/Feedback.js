@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { array, intersection } from "zod";
 
 const feedbackSchema = new mongoose.Schema({
     userId: {
@@ -12,26 +11,39 @@ const feedbackSchema = new mongoose.Schema({
         ref: "Interview",
         required: true
     },
-    total_score: {
-        type: Number,
+    questions: {
+        type: Array,
         required: true
     },
-    category_score: {
-        communication_skills: { type: Number, required: true },
-        technical_knowledge: { type: Number, required: true },
-        problem_solving: { type: Number, required: true },
-        cultural_role_fit: { type: Number, required: true },
-        confidence_clarity: { type: Number, required: true },
+    summary: {
+        type: String,
+        required: true
     },
     strength: {
         type: Array,
         required: true
     },
-    areasforimprovement: {
+    area_of_improvement: {
         type: Array,
         required: true
     },
-    finalassessment: {
+    tips: {
+        type: Array,
+        required: true
+    },
+    total_score: {
+        type: Number,
+        required: true
+    },
+    communication_score: {
+        type: Number,
+        required: true
+    },
+    technical_score: {
+        type: Number,
+        required: true
+    },
+    practice_question: {
         type: Array,
         required: true
     },

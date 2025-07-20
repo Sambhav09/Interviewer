@@ -1,6 +1,12 @@
 import mongoose from "mongoose";
 
 const InterviewSchema = new mongoose.Schema({
+
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
     role: {
         type: String,
         required: true
@@ -13,23 +19,19 @@ const InterviewSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    amount: {
+    numberOfQuestions: {
         type: Number,
         required: true
     },
     techstack: {
-        type: Array,
+        type: [String],
         required: true
     },
-    question: {
-        type: Array,
+    questions: {
+        type: [String],
         required: true,
     },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-    },
+
     completed: {
         type: Boolean,
         default: false,
@@ -44,3 +46,4 @@ const InterviewSchema = new mongoose.Schema({
 const Interview = mongoose.models.Interview || mongoose.model("Interview", InterviewSchema);
 
 export default Interview;
+
