@@ -4,14 +4,14 @@ An AI-powered mock interview platform that simulates real-life interviews using 
 
 🚀 Features
 
-1. 🔐 User Authentication
-   ⦿ Users must log in before accessing the platform.
-2. 🎯 AI-Based Interview Creation
-   ⦿ Users can create a custom interview by speaking naturally.
-   ⦿ AI collects details like:
-   ⦿ Topic / Domain (e.g., Web Development, DSA)
-3. Number of questions
-   ⦿ Difficulty level (Easy / Medium / Hard)
+1. 🔐 User Authentication  
+   ⦿ Users must log in before accessing the platform.  
+2. 🎯 AI-Based Interview Creation  
+   ⦿ Users can create a custom interview by speaking naturally.  
+   ⦿ AI collects details like:  
+   ⦿ Topic / Domain (e.g., Web Development, DSA)  
+3. Number of questions  
+   ⦿ Difficulty level (Easy / Medium / Hard)  
    ⦿ Other preferences
 4. 🧠 Smart Question Generation
    ⦿ Interview questions are generated using AI (Google Gemini).
