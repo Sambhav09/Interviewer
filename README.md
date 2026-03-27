@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+🤖 AI Interviewer Platform
 
-## Getting Started
+An AI-powered mock interview platform that simulates real-life interviews using voice-based interaction. This project helps users practice interviews in a realistic environment and receive intelligent feedback.
 
-First, run the development server:
+🚀 Features
+🔐 User Authentication
+Users must log in before accessing the platform.
+🎯 AI-Based Interview Creation
+Users can create a custom interview by speaking naturally.
+AI collects details like:
+Topic / Domain (e.g., Web Development, DSA)
+Number of questions
+Difficulty level (Easy / Medium / Hard)
+Other preferences
+🧠 Smart Question Generation
+Interview questions are generated using AI (Google Gemini).
+Questions are tailored based on user input.
+🎙️ Realistic Voice Interview (VAPI AI)
+The interview is conducted via voice using VAPI AI.
+Feels like interacting with a real interviewer.
+Real-time question asking and answering.
+📊 AI Feedback System
+After completing the interview:
+Detailed feedback is generated
+Performance analysis is provided
+Feedback is powered by Google Gemini.
+🛠️ Tech Stack
+Frontend
+Next.js
+React
+Tailwind CSS
+Backend
+Node.js / Express (if used)
+MongoDB (for storing users/interviews)
+AI & Integrations
+Google Gemini API → Question & Feedback generation
+VAPI AI → Voice-based interview experience
+Speech Input → Collect interview details naturally
+📌 How It Works
+User Login
+User logs into the platform.
+Create Interview
+User speaks to the AI to define:
+Topic
+Difficulty
+Number of questions
+AI processes and creates the interview.
+Question Generation
+Gemini generates relevant interview questions.
+Take Interview
+VAPI AI conducts the interview via voice.
+User answers in real-time.
+Get Feedback
+Gemini analyzes responses.
+Generates structured feedback and suggestions.
+📷 Flow Overview
+Login → Create Interview (Voice Input) → Generate Questions → 
+Voice Interview (VAPI AI) → AI Feedback (Gemini)
+💡 Use Cases
+Students preparing for placements
+Developers practicing technical interviews
+Improving communication & confidence
+Mock interviews before real job interviews
+🔧 Installation
+# Clone the repo
+git clone https://github.com/your-username/ai-interviewer.git
 
-```bash
+# Navigate to project
+cd ai-interviewer
+
+# Install dependencies
+npm install
+
+# Run the project
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🔐 Environment Variables
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create a .env file and add:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+GEMINI_API_KEY=your_key
+VAPI_API_KEY=your_key
+MONGODB_URI=your_db_uri
+JWT_SECRET=your_secret
+📈 Future Improvements
+Video-based interviews
+Resume-based question generation
+Multi-language support
+Interview history tracking
+Leaderboard / scoring system
